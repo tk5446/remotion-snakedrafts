@@ -1,18 +1,15 @@
-import "./index.css";
 import { Composition } from "remotion";
-import { MyComposition } from "./Composition";
+import { RankedVideo } from "./RankedVideo";
 
-export const RemotionRoot: React.FC = () => {
+export const RemotionRoot = () => {
   return (
-    <>
-      <Composition
-        id="MyComp"
-        component={MyComposition}
-        durationInFrames={60}
-        fps={30}
-        width={1280}
-        height={720}
-      />
-    </>
+    <Composition
+      id="RankedVideo"
+      component={RankedVideo}
+      durationInFrames={300}
+      fps={30}
+      width={1080}
+      height={1920}
+    />
   );
 };
