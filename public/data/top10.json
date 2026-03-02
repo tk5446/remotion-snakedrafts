@@ -1,0 +1,12 @@
+[
+    { "rank": 10, "label": "Entourage", "image": "assets/entourage.png" },
+    { "rank": 9, "label": "Curb Your Enthusiasm", "image": "assets/curb.jpg" },
+    { "rank": 8, "label": "The Last of Us", "image": "assets/tlou.jpg" },
+    { "rank": 7, "label": "True Detective", "image": "assets/td.jpg" },
+    { "rank": 6, "label": "Succession", "image": "assets/succession.jpg" },
+    { "rank": 5, "label": "The Sopranos", "image": "assets/sopranos.mp4" },
+    { "rank": 4, "label": "The Wire", "image": "assets/wire.jpg" },
+    { "rank": 3, "label": "Mad Men", "image": "assets/madmen.jpg" },
+    { "rank": 2, "label": "Breaking Bad", "image": "assets/breaking_bad.jpg" },
+    { "rank": 1, "label": "Game of Thrones", "image": "assets/got.png" }
+  ]
