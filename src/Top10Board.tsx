@@ -6,6 +6,7 @@ import {
   useCurrentFrame,
   staticFile,
   OffthreadVideo,
+  Sequence,
 } from "remotion";
 
 import data from "../public/data/top10.json";
@@ -13,6 +14,7 @@ import data from "../public/data/top10.json";
 type Row = {
   rank: number;
   label: string;
+<<<<<<< Updated upstream
   media?: string;
   image?: string;
 };
@@ -25,6 +27,15 @@ const BOX_H = 77;
 const LEFT_X = 110;
 const RIGHT_X = 647;
 const ROW_Y = [852, 942, 1030, 1118, 1207];
+=======
+  media?: string; // preferred
+  image?: string; // legacy support
+};
+
+const FPS = 30;
+const SECONDS_PER_ROW = 5;
+const FRAMES_PER_ROW = SECONDS_PER_ROW * FPS; // 150
+>>>>>>> Stashed changes
 
 const isVideoFile = (p: string) => {
   const lower = p.toLowerCase();
@@ -42,12 +53,14 @@ const safeStaticFile = (p: string | undefined) => {
   return staticFile(cleaned);
 };
 
-const Media = ({
+const BackgroundMedia = ({
   src,
-  style,
+  segmentStartFrame,
+  activeIndex,
 }: {
   src: string | undefined;
-  style: React.CSSProperties;
+  segmentStartFrame: number;
+  activeIndex: number;
 }) => {
   const resolved = safeStaticFile(src);
 
@@ -55,41 +68,86 @@ const Media = ({
     return (
       <AbsoluteFill
         style={{
-          ...style,
           backgroundColor: "black",
           color: "white",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 26,
+          fontSize: 22,
           fontWeight: 700,
           padding: 24,
           textAlign: "center",
         }}
       >
+<<<<<<< Updated upstream
         Missing media path. Check JSON keys: use "media" or "image".
+=======
+        Missing media path. Ensure each row has "media" (or legacy "image").
+>>>>>>> Stashed changes
       </AbsoluteFill>
     );
   }
 
-  if (src && isVideoFile(src)) {
-    return <OffthreadVideo src={resolved} muted style={style} />;
+  // Image case
+  if (!src || !isVideoFile(src)) {
+    return (
+      <Img
+        src={resolved}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        }}
+      />
+    );
   }
 
-  return <Img src={resolved} style={style} />;
+  // Video case (audio ON)
+  return (
+    <Sequence from={segmentStartFrame} durationInFrames={FRAMES_PER_ROW}>
+      <OffthreadVideo
+        key={`${resolved}-${activeIndex}`} // force restart per segment
+        src={resolved}
+        // ✅ audio on (remove muted)
+        // muted
+        startFrom={0}
+        endAt={FRAMES_PER_ROW}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        }}
+      />
+    </Sequence>
+  );
 };
 
+<<<<<<< Updated upstream
 export const Top10Board = ({ title }: { title: string }) => {
+=======
+export const Top10Board = ({
+  bg,
+  fallbackBg,
+  title,
+}: {
+  bg?: string; // legacy
+  fallbackBg?: string; // preferred
+  title: string;
+}) => {
+>>>>>>> Stashed changes
   const frame = useCurrentFrame();
   const rows: Row[] = (data as Row[]) ?? [];
 
   const activeIndex = Math.floor(frame / FRAMES_PER_ROW);
+  const segmentStartFrame = activeIndex * FRAMES_PER_ROW;
+
   const activeRow = rows[activeIndex];
 
   const left = rows.slice(0, 5);
   const right = rows.slice(5, 10);
 
   const chosen =
+<<<<<<< Updated upstream
     activeRow?.media ?? activeRow?.image ?? "assets/got.png";
 
   return (
@@ -110,6 +168,20 @@ export const Top10Board = ({ title }: { title: string }) => {
           width: 1080,
           height: 815,
         }}
+=======
+    activeRow?.media ??
+    activeRow?.image ??
+    fallbackBg ??
+    bg ??
+    "assets/got.png";
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: "black" }}>
+      <BackgroundMedia
+        src={chosen}
+        segmentStartFrame={segmentStartFrame}
+        activeIndex={activeIndex}
+>>>>>>> Stashed changes
       />
 
       {/* Layer 3: Title background */}
