@@ -13,14 +13,18 @@ import data from "../public/data/top10.json";
 type Row = {
   rank: number;
   label: string;
-  // New key:
   media?: string;
-  // Backward-compat with your earlier JSON:
   image?: string;
 };
 
 const FPS = 30;
-const FRAMES_PER_ROW = 5 * FPS; // 150 frames
+const FRAMES_PER_ROW = 5 * FPS;
+
+const BOX_W = 405;
+const BOX_H = 77;
+const LEFT_X = 110;
+const RIGHT_X = 647;
+const ROW_Y = [852, 942, 1030, 1118, 1207];
 
 const isVideoFile = (p: string) => {
   const lower = p.toLowerCase();
@@ -34,7 +38,6 @@ const isVideoFile = (p: string) => {
 
 const safeStaticFile = (p: string | undefined) => {
   if (!p) return null;
-  // Prevent accidental leading slash issues like "/assets/x.png"
   const cleaned = p.startsWith("/") ? p.slice(1) : p;
   return staticFile(cleaned);
 };
@@ -64,8 +67,7 @@ const Media = ({
           textAlign: "center",
         }}
       >
-        Missing media path (src is undefined). Check JSON keys: use "media" (or
-        legacy "image").
+        Missing media path. Check JSON keys: use "media" or "image".
       </AbsoluteFill>
     );
   }
@@ -77,18 +79,8 @@ const Media = ({
   return <Img src={resolved} style={style} />;
 };
 
-export const Top10Board = ({
-  // Accept BOTH names so Root.tsx prop mismatch can’t crash you
-  bg,
-  fallbackBg,
-  title,
-}: {
-  bg?: string; // legacy prop
-  fallbackBg?: string; // new prop
-  title: string;
-}) => {
+export const Top10Board = ({ title }: { title: string }) => {
   const frame = useCurrentFrame();
-
   const rows: Row[] = (data as Row[]) ?? [];
 
   const activeIndex = Math.floor(frame / FRAMES_PER_ROW);
@@ -97,166 +89,168 @@ export const Top10Board = ({
   const left = rows.slice(0, 5);
   const right = rows.slice(5, 10);
 
-  // Use media first, then image (legacy), then bg/fallbackBg
   const chosen =
-    activeRow?.media ??
-    activeRow?.image ??
-    fallbackBg ??
-    bg ??
-    "assets/got.png"; // last-ditch default so you see *something*
+    activeRow?.media ?? activeRow?.image ?? "assets/got.png";
 
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
-      {/* Dynamic Background (image OR video) */}
+      {/* Layer 1: Hero image/video */}
       <Media
         src={chosen}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      />
+
+      {/* Layer 2: Bottom board template */}
+      <Img
+        src={staticFile("assets/template/bottom-layer.png")}
         style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: 1080,
+          height: 815,
         }}
       />
 
-      {/* Bottom board */}
+      {/* Layer 3: Title background */}
+      <Img
+        src={staticFile("assets/template/title-background.png")}
+        style={{
+          position: "absolute",
+          top: 680,
+          left: 0,
+          width: 1080,
+          height: 170,
+        }}
+      />
+
+      {/* Layer 4: Title text */}
       <div
         style={{
           position: "absolute",
+          top: 680,
           left: 0,
-          right: 0,
-          bottom: 0,
-          height: 420,
-          padding: 24,
-          background:
-            "linear-gradient(90deg, rgba(168,85,247,0.95), rgba(147,51,234,0.95))",
+          width: 1080,
+          height: 170,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          fontFamily: "Arial, Helvetica, sans-serif",
+          fontWeight: 900,
+          fontSize: 48,
+          lineHeight: 1.15,
+          textAlign: "center",
+          whiteSpace: "pre-line",
+          textTransform: "uppercase",
         }}
       >
-        {/* Title */}
-        <div
-          style={{
-            marginBottom: 16,
-            padding: "12px 16px",
-            background: "rgba(0,0,0,0.55)",
-            color: "white",
-            fontWeight: 800,
-            fontSize: 42,
-            lineHeight: 1.1,
-            textAlign: "center",
-            whiteSpace: "pre-line",
-            borderRadius: 8,
-          }}
-        >
-          {title}
-        </div>
-
-        {/* Columns */}
-        <div style={{ display: "flex", gap: 18 }}>
-          <Column frame={frame} rows={left} offset={0} />
-          <Column frame={frame} rows={right} offset={5} />
-        </div>
-
-        {/* CTA */}
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: 14,
-            color: "white",
-            fontSize: 28,
-            fontWeight: 700,
-          }}
-        >
-          Draft this on the SnakeDrafts app!
-        </div>
+        {title}
       </div>
+
+      {/* Layer 5: SD logo */}
+      <Img
+        src={staticFile("assets/template/sd-logo.png")}
+        style={{
+          position: "absolute",
+          top: 25,
+          right: 25,
+          width: 80,
+          height: 83,
+        }}
+      />
+
+      {/* Layer 6 & 7: Revealed items */}
+      {left.map((r, i) => (
+        <RevealedItem
+          key={r.rank}
+          row={r}
+          globalIndex={i}
+          frame={frame}
+          x={LEFT_X}
+          y={ROW_Y[i]}
+        />
+      ))}
+      {right.map((r, i) => (
+        <RevealedItem
+          key={r.rank}
+          row={r}
+          globalIndex={5 + i}
+          frame={frame}
+          x={RIGHT_X}
+          y={ROW_Y[i]}
+        />
+      ))}
     </AbsoluteFill>
   );
 };
 
-const Column = ({
+const RevealedItem = ({
+  row,
+  globalIndex,
   frame,
-  rows,
-  offset,
+  x,
+  y,
 }: {
+  row: Row;
+  globalIndex: number;
   frame: number;
-  rows: Row[];
-  offset: number;
+  x: number;
+  y: number;
 }) => {
+  const START = globalIndex * FRAMES_PER_ROW;
+  const DURATION = 20;
+
+  const isRevealed = frame >= START && !!row.label;
+  if (!isRevealed) return null;
+
+  const appear = interpolate(frame, [START, START + DURATION], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
   return (
     <div
       style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        gap: 10,
+        position: "absolute",
+        left: x,
+        top: y,
+        width: BOX_W,
+        height: BOX_H,
+        opacity: appear,
+        transform: `scale(${0.95 + 0.05 * appear})`,
+        transformOrigin: "center center",
       }}
     >
-      {rows.map((r, i) => {
-        const globalIndex = offset + i;
-
-        const START = globalIndex * FRAMES_PER_ROW;
-        const DURATION = 20;
-
-        const isRevealed = frame >= START && !!r.label;
-
-        const appear = interpolate(frame, [START, START + DURATION], [0, 1], {
-          extrapolateLeft: "clamp",
-          extrapolateRight: "clamp",
-        });
-
-        return (
-          <div
-            key={r.rank}
-            style={{
-              display: "flex",
-              gap: 8,
-              alignItems: "stretch",
-            }}
-          >
-            {/* Rank */}
-            <div
-              style={{
-                width: 60,
-                borderRadius: 8,
-                background: "rgba(255,255,255,0.2)",
-                border: "2px solid rgba(255,255,255,0.7)",
-                color: "white",
-                fontWeight: 900,
-                fontSize: 28,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {r.rank}
-            </div>
-
-            {/* Label */}
-            <div
-              style={{
-                flex: 1,
-                borderRadius: 8,
-                border: "2px solid rgba(255,255,255,0.7)",
-                background: isRevealed
-                  ? "rgba(236,72,153,0.95)"
-                  : "rgba(255,255,255,0.08)",
-                color: "white",
-                fontWeight: 800,
-                fontSize: 24,
-                display: "flex",
-                alignItems: "center",
-                paddingLeft: 12,
-                opacity: isRevealed ? appear : 1,
-                transform: isRevealed
-                  ? `scale(${0.95 + 0.05 * appear}) translateY(${
-                      (1 - appear) * 8
-                    }px)`
-                  : undefined,
-              }}
-            >
-              {isRevealed ? r.label : ""}
-            </div>
-          </div>
-        );
-      })}
+      <Img
+        src={staticFile("assets/template/highlighted-text-rectangle.png")}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: BOX_W,
+          height: BOX_H,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: BOX_W,
+          height: BOX_H,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          fontFamily: "Arial, Helvetica, sans-serif",
+          fontWeight: 800,
+          fontSize: 28,
+          textAlign: "center",
+        }}
+      >
+        {row.label}
+      </div>
     </div>
   );
 };
