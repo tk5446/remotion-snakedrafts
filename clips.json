@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "-Sgj78QG9Bg",
+      "sourceUrl": "https://www.youtube.com/watch?v=-Sgj78QG9Bg",
+      "title": "the-wire",
+      "rawPath": "media/raw/-Sgj78QG9Bg.mp4",
+      "clip": {
+        "start": 268,
+        "end": null,
+        "duration": 8,
+        "targetW": 1080,
+        "targetH": 1920,
+        "mode": "centerCrop"
+      },
+      "outPath": "media/out/the-wire.mp4",
+      "createdAt": "2026-03-04T00:34:38.354Z"
+    },
+    {
+      "id": "-Sgj78QG9Bg",
+      "sourceUrl": "https://www.youtube.com/watch?v=-Sgj78QG9Bg",
+      "title": "the-wire",
+      "rawPath": "media/raw/-Sgj78QG9Bg.mp4",
+      "clip": {
+        "start": 268,
+        "end": null,
+        "duration": 8,
+        "targetW": 1080,
+        "targetH": 1920,
+        "mode": "centerCrop"
+      },
+      "outPath": "media/out/the-wire-1.mp4",
+      "createdAt": "2026-03-04T00:36:05.184Z"
+    },
+    {
+      "id": "-Sgj78QG9Bg",
+      "sourceUrl": "https://www.youtube.com/watch?v=-Sgj78QG9Bg",
+      "title": "the-wire",
+      "rawPath": "media/raw/-Sgj78QG9Bg.mp4",
+      "clip": {
+        "start": 268,
+        "end": null,
+        "duration": 8,
+        "targetW": 1080,
+        "targetH": 1920,
+        "mode": "centerCrop"
+      },
+      "outPath": "media/out/the-wire-2.mp4",
+      "createdAt": "2026-03-04T00:40:23.381Z"
+    },
+    {
+      "id": "-Sgj78QG9Bg",
+      "sourceUrl": "https://www.youtube.com/watch?v=-Sgj78QG9Bg",
+      "title": "the-wire",
+      "rawPath": "media/raw/-Sgj78QG9Bg.mp4",
+      "clip": {
+        "start": 268,
+        "end": null,
+        "duration": 8,
+        "targetW": 1080,
+        "targetH": 1920,
+        "mode": "centerCrop"
+      },
+      "outPath": "media/out/the-wire-3.mp4",
+      "createdAt": "2026-03-04T00:40:55.666Z"
+    },
+    {
+      "id": "yiMJMENYFLM",
+      "sourceUrl": "https://www.youtube.com/watch?v=yiMJMENYFLM",
+      "title": "thrones",
+      "rawPath": "media/raw/yiMJMENYFLM.mp4",
+      "clip": {
+        "start": 124,
+        "end": null,
+        "duration": 8,
+        "targetW": null,
+        "targetH": null,
+        "mode": null
+      },
+      "outPath": "media/out/thrones.mp4",
+      "createdAt": "2026-03-04T00:48:21.566Z"
+    }
+  ]
+}

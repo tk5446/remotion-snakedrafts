@@ -25,7 +25,13 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+
+    "clips:install": "cd tools/clip-studio && npm install",
+    "clips:dev": "cd tools/clip-studio && npm run dev",
+    "clips:search": "cd tools/clip-studio && npm run search --",
+    "clips:download": "cd tools/clip-studio && npm run download --",
+    "clips:clip": "cd tools/clip-studio && npm run clip --"
   },
   "sideEffects": [
     "*.css"

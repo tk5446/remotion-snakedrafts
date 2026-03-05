@@ -1,0 +1,57 @@
+{
+    "folder_name": "BRAD-PITT",
+    "title": "Top 5 Brad Pitt Movies",
+    "description": "Brad Pitt has made a LOT of great movies…\n\nBut which one is #1? 👀\n\n5️⃣ Moneyball\n4️⃣ The Big Short\n🥉 Once Upon a Time in Hollywood\n🥈 Se7en\n🥇 Fight Club\n\nAgree or nah? 🤔\n\n👇 Drop your #1 in the comments.\n\n🔗 Draft this on the app — link in bio.\n\n#movies #movieranking #bradpitt #cinema #movielovers",
+    "rankings": [
+      {
+        "rank": 5,
+        "label": "The Big Short",
+        "video": {
+          "yt_url": "https://www.youtube.com/watch?v=-4QPVo0UIzc",
+          "start_time": 5,
+          "duration": 10,
+      "clipped_video": "bp5.mp4"
+        }
+      },
+      {
+        "rank": 4,
+        "label": "Moneyball",
+        "video": {
+          "yt_url": "https://www.youtube.com/watch?v=vgqG3ITMv1Q",
+          "start_time": 1,
+          "duration": 10,
+      "clipped_video": "bp3.mp4"
+        }
+      },
+      {
+        "rank": 3,
+        "label": "Once Upon a Time... in Hollywood",
+        "video": {
+          "yt_url": "https://www.youtube.com/watch?v=ELeMaP8EPAA",
+          "start_time": 10,
+          "duration": 10,
+      "clipped_video": "bp2.mp4"
+        }
+      },
+      {
+        "rank": 2,
+        "label": "Se7en",
+        "video": {
+          "yt_url": "https://www.youtube.com/watch?v=znmZoVkCjpI",
+          "start_time": 8,
+          "duration": 10,
+      "clipped_video": "bp1.mp4"
+        }
+      },
+      {
+        "rank": 1,
+        "label": "Fight Club",
+        "video": {
+          "yt_url": "https://www.youtube.com/watch?v=SUXWAEX2jlg",
+          "start_time": 15,
+          "duration": 10,
+      "clipped_video": "bp4.mp4"
+        }
+      }
+    ]
+  }

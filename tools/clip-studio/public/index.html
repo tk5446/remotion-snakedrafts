@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clip Studio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Clip Studio</h1>
+  </header>
+
+  <main>
+    <!-- Search -->
+    <section id="search-section">
+      <h2>Search YouTube</h2>
+      <form id="search-form">
+        <input type="text" id="search-input" placeholder="Search for videos..." autocomplete="off">
+        <button type="submit">Search</button>
+      </form>
+      <div id="search-status"></div>
+      <div id="results-list"></div>
+    </section>
+
+    <!-- Clip Builder -->
+    <section id="clip-section">
+      <h2>Clip Builder</h2>
+      <div class="form-grid">
+        <label for="clip-video">Video</label>
+        <select id="clip-video">
+          <option value="">— download a video first —</option>
+        </select>
+
+        <label for="clip-start">Start (sec or HH:MM:SS)</label>
+        <input type="text" id="clip-start" placeholder="0" value="0">
+
+        <label for="clip-end">End (sec or HH:MM:SS)</label>
+        <input type="text" id="clip-end" placeholder="optional">
+
+        <label for="clip-duration">Duration (sec)</label>
+        <input type="text" id="clip-duration" placeholder="optional">
+
+        <label for="clip-w">Crop width</label>
+        <input type="number" id="clip-w" placeholder="leave empty = no crop" min="100" max="4096">
+
+        <label for="clip-h">Crop height</label>
+        <input type="number" id="clip-h" placeholder="leave empty = no crop" min="100" max="4096">
+
+        <label for="clip-name">Output name</label>
+        <input type="text" id="clip-name" placeholder="auto-generated">
+      </div>
+      <button id="generate-btn">Generate Clip</button>
+    </section>
+
+    <!-- Output -->
+    <section id="output-section" class="hidden">
+      <h2>Output</h2>
+      <p id="output-path"></p>
+      <video id="output-preview" controls></video>
+    </section>
+  </main>
+
+  <footer>
+    <div id="status-bar"></div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

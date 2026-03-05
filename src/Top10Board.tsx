@@ -14,28 +14,17 @@ import data from "../public/data/top10.json";
 type Row = {
   rank: number;
   label: string;
-<<<<<<< Updated upstream
   media?: string;
   image?: string;
 };
 
 const FPS = 30;
-const FRAMES_PER_ROW = 5 * FPS;
 
 const BOX_W = 405;
 const BOX_H = 77;
 const LEFT_X = 110;
 const RIGHT_X = 647;
 const ROW_Y = [852, 942, 1030, 1118, 1207];
-=======
-  media?: string; // preferred
-  image?: string; // legacy support
-};
-
-const FPS = 30;
-const SECONDS_PER_ROW = 5;
-const FRAMES_PER_ROW = SECONDS_PER_ROW * FPS; // 150
->>>>>>> Stashed changes
 
 const isVideoFile = (p: string) => {
   const lower = p.toLowerCase();
@@ -57,10 +46,12 @@ const BackgroundMedia = ({
   src,
   segmentStartFrame,
   activeIndex,
+  framesPerRow,
 }: {
   src: string | undefined;
   segmentStartFrame: number;
   activeIndex: number;
+  framesPerRow: number;
 }) => {
   const resolved = safeStaticFile(src);
 
@@ -79,16 +70,11 @@ const BackgroundMedia = ({
           textAlign: "center",
         }}
       >
-<<<<<<< Updated upstream
         Missing media path. Check JSON keys: use "media" or "image".
-=======
-        Missing media path. Ensure each row has "media" (or legacy "image").
->>>>>>> Stashed changes
       </AbsoluteFill>
     );
   }
 
-  // Image case
   if (!src || !isVideoFile(src)) {
     return (
       <Img
@@ -102,16 +88,13 @@ const BackgroundMedia = ({
     );
   }
 
-  // Video case (audio ON)
   return (
-    <Sequence from={segmentStartFrame} durationInFrames={FRAMES_PER_ROW}>
+    <Sequence from={segmentStartFrame} durationInFrames={framesPerRow}>
       <OffthreadVideo
-        key={`${resolved}-${activeIndex}`} // force restart per segment
+        key={`${resolved}-${activeIndex}`}
         src={resolved}
-        // ✅ audio on (remove muted)
-        // muted
         startFrom={0}
-        endAt={FRAMES_PER_ROW}
+        endAt={framesPerRow}
         style={{
           width: "100%",
           height: "100%",
@@ -122,22 +105,17 @@ const BackgroundMedia = ({
   );
 };
 
-<<<<<<< Updated upstream
-export const Top10Board = ({ title }: { title: string }) => {
-=======
 export const Top10Board = ({
-  bg,
-  fallbackBg,
   title,
+  secondsPerRow = 3,
 }: {
-  bg?: string; // legacy
-  fallbackBg?: string; // preferred
   title: string;
+  secondsPerRow?: number;
 }) => {
->>>>>>> Stashed changes
   const frame = useCurrentFrame();
   const rows: Row[] = (data as Row[]) ?? [];
 
+  const FRAMES_PER_ROW = secondsPerRow * FPS;
   const activeIndex = Math.floor(frame / FRAMES_PER_ROW);
   const segmentStartFrame = activeIndex * FRAMES_PER_ROW;
 
@@ -147,15 +125,16 @@ export const Top10Board = ({
   const right = rows.slice(5, 10);
 
   const chosen =
-<<<<<<< Updated upstream
     activeRow?.media ?? activeRow?.image ?? "assets/got.png";
 
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
       {/* Layer 1: Hero image/video */}
-      <Media
+      <BackgroundMedia
         src={chosen}
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        segmentStartFrame={segmentStartFrame}
+        activeIndex={activeIndex}
+        framesPerRow={FRAMES_PER_ROW}
       />
 
       {/* Layer 2: Bottom board template */}
@@ -168,31 +147,17 @@ export const Top10Board = ({
           width: 1080,
           height: 815,
         }}
-=======
-    activeRow?.media ??
-    activeRow?.image ??
-    fallbackBg ??
-    bg ??
-    "assets/got.png";
-
-  return (
-    <AbsoluteFill style={{ backgroundColor: "black" }}>
-      <BackgroundMedia
-        src={chosen}
-        segmentStartFrame={segmentStartFrame}
-        activeIndex={activeIndex}
->>>>>>> Stashed changes
       />
 
       {/* Layer 3: Title background */}
-      <Img
-        src={staticFile("assets/template/title-background.png")}
+      <div
         style={{
           position: "absolute",
           top: 680,
           left: 0,
           width: 1080,
           height: 170,
+          backgroundColor: "rgba(0, 0, 0, 0.35)",
         }}
       />
 
@@ -241,6 +206,7 @@ export const Top10Board = ({
           frame={frame}
           x={LEFT_X}
           y={ROW_Y[i]}
+          framesPerRow={FRAMES_PER_ROW}
         />
       ))}
       {right.map((r, i) => (
@@ -251,6 +217,7 @@ export const Top10Board = ({
           frame={frame}
           x={RIGHT_X}
           y={ROW_Y[i]}
+          framesPerRow={FRAMES_PER_ROW}
         />
       ))}
     </AbsoluteFill>
@@ -263,14 +230,16 @@ const RevealedItem = ({
   frame,
   x,
   y,
+  framesPerRow,
 }: {
   row: Row;
   globalIndex: number;
   frame: number;
   x: number;
   y: number;
+  framesPerRow: number;
 }) => {
-  const START = globalIndex * FRAMES_PER_ROW;
+  const START = globalIndex * framesPerRow;
   const DURATION = 20;
 
   const isRevealed = frame >= START && !!row.label;
@@ -315,8 +284,8 @@ const RevealedItem = ({
           alignItems: "center",
           justifyContent: "center",
           color: "white",
-          fontFamily: "Arial, Helvetica, sans-serif",
-          fontWeight: 800,
+          fontFamily: "'Arial Narrow', 'Arial Nova Condensed', sans-serif",
+          fontWeight: 700,
           fontSize: 28,
           textAlign: "center",
         }}

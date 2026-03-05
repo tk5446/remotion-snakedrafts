@@ -8,5 +8,5 @@
     { "rank": 4, "label": "The Wire", "image": "assets/wire.jpg" },
     { "rank": 3, "label": "Mad Men", "image": "assets/madmen.jpg" },
     { "rank": 2, "label": "Breaking Bad", "image": "assets/breaking_bad.jpg" },
-    { "rank": 1, "label": "Game of Thrones", "image": "assets/got.png" }
+    { "rank": 1, "label": "Game of Thrones", "image": "assets/media/out/thrones.mp4" }
   ]

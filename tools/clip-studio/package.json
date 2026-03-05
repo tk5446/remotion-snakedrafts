@@ -1,0 +1,14 @@
+{
+  "name": "clip-studio",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "scripts": {
+    "dev": "node server.mjs",
+    "search": "node server.mjs search",
+    "download": "node server.mjs download",
+    "clip": "node server.mjs clip"
+  }
+}
