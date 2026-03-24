@@ -31,9 +31,21 @@ def folder_name_to_display(folder_name: str) -> str:
 def build_queries(entry_type: str, actor_name: str, label: str) -> list[str]:
     if entry_type == "Actor":
         return [
-            f"{actor_name} {label} Highlights",
-            f"{actor_name} {label} Best Moments",
+            f"{actor_name} {label} All Scenes",
+            f"{actor_name} {label} Every Scene",
+            f"{actor_name} {label} Scene Compilation",
+            f"{actor_name} {label} All Clips",
+            f"{actor_name} {label} Full Performance",
             f"{actor_name} {label} Best Scenes",
+            f"{actor_name} {label} Best Moments",
+            f"{actor_name} {label} Top Scenes",
+            f"{actor_name} {label} Greatest Moments",
+            f"{actor_name} {label} Highlights",
+            f"{actor_name} {label} Scenes",
+            f"{actor_name} {label} Funny Moments",
+            f"{actor_name} {label} Iconic Scenes",
+            f"{actor_name} {label} Most Memorable Scenes",
+            f"{actor_name} {label} Movie Clips",
         ]
     return [f"{label} Highlights"]
 
@@ -126,6 +138,25 @@ def pick_best_video(
 
     if not candidates:
         return {"url": "", "title": "", "duration": 0, "confidence": 0.0}
+
+    # Deduplicate by video ID (keep first occurrence)
+    seen_urls = set()
+    deduped = []
+    for c in candidates:
+        if c["url"] not in seen_urls:
+            seen_urls.add(c["url"])
+            deduped.append(c)
+    candidates = deduped
+
+    # Compilation title bonus: +0.2 (capped at 1.0)
+    COMPILATION_KEYWORDS = {
+        "compilation", "all scenes", "every scene", "best scenes", "highlights",
+        "top scenes", "all clips", "full performance",
+    }
+    for c in candidates:
+        title_lower = c["title"].lower()
+        if any(kw in title_lower for kw in COMPILATION_KEYWORDS):
+            c["confidence"] = min(1.0, round(c["confidence"] + 0.2, 3))
 
     # Prefer candidates within duration range, then sort by confidence desc
     in_range = [c for c in candidates if c["in_duration"]]
