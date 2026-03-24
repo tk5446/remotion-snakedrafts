@@ -18,7 +18,7 @@ import re
 
 YT_DLP = "/opt/homebrew/bin/yt-dlp"
 DURATION_MIN = 60
-DURATION_MAX = 300
+DURATION_MAX = 900
 CONFIDENCE_WARN = 0.7
 MAX_RESULTS_PER_QUERY = 5
 
@@ -161,7 +161,6 @@ def pick_best_video(
     # Prefer candidates within duration range, then sort by confidence desc
     in_range = [c for c in candidates if c["in_duration"]]
     pool = in_range if in_range else candidates
-    pool.sort(key=lambda c: c["confidence"], reverse=True)
     best = pool[0]
     return best
 
