@@ -31,27 +31,30 @@ def folder_name_to_display(folder_name: str) -> str:
 def build_queries(entry_type: str, actor_name: str, label: str) -> list[str]:
     if entry_type == "Actor":
         return [
-            f"{actor_name} {label} All Scenes",
-            f"{actor_name} {label} Every Scene",
-            f"{actor_name} {label} Scene Compilation",
-            f"{actor_name} {label} All Clips",
-            f"{actor_name} {label} Full Performance",
-            f"{actor_name} {label} Best Scenes",
-            f"{actor_name} {label} Best Moments",
-            f"{actor_name} {label} Top Scenes",
-            f"{actor_name} {label} Greatest Moments",
+            f"{actor_name} {label} Best",
             f"{actor_name} {label} Highlights",
-            f"{actor_name} {label} Scenes",
-            f"{actor_name} {label} Funny Moments",
-            f"{actor_name} {label} Iconic Scenes",
-            f"{actor_name} {label} Most Memorable Scenes",
-            f"{actor_name} {label} Movie Clips",
+            # f"{actor_name} {label} Every Scene",
+            # f"{actor_name} {label} Scene Compilation",
+            # f"{actor_name} {label} All Clips",
+            # f"{actor_name} {label} Full Performance",
+            # f"{actor_name} {label} Best Scenes",
+            # f"{actor_name} {label} Best Moments",
+            # f"{actor_name} {label} Top Scenes",
+            # f"{actor_name} {label} Greatest Moments",
+            
+            # f"{actor_name} {label} Scenes",
+            # f"{actor_name} {label} Funny Moments",
+            # f"{actor_name} {label} Iconic Scenes",
+            # f"{actor_name} {label} Most Memorable Scenes",
+            # f"{actor_name} {label} Movie Clips",
         ]
     return [f"{label} Highlights"]
 
 
-def search_youtube(query: str, max_results: int = MAX_RESULTS_PER_QUERY) -> list[dict]:
+def search_youtube(query: str, max_results: int = MAX_RESULTS_PER_QUERY, debug: bool = False) -> list[dict]:
     """Run yt-dlp search and return list of video metadata dicts."""
+    if debug:
+        print(f"  [query] {query}")
     search_url = f"ytsearch{max_results}:{query}"
     cmd = [
         YT_DLP,
@@ -71,6 +74,9 @@ def search_youtube(query: str, max_results: int = MAX_RESULTS_PER_QUERY) -> list
                 videos.append(json.loads(line))
             except json.JSONDecodeError:
                 continue
+        if debug:
+            for v in videos:
+                print(f"    {v.get('duration', 'N/A')}s  {v.get('title', '')}")
         return videos
     except subprocess.TimeoutExpired:
         print(f"  [timeout] Query: {query}", file=sys.stderr)
@@ -114,7 +120,7 @@ def pick_best_video(
     candidates = []  # list of (confidence, video)
 
     for query in queries:
-        videos = search_youtube(query)
+        videos = search_youtube(query, debug=True)
         for v in videos:
             duration = v.get("duration") or 0
             title = v.get("title") or ""
