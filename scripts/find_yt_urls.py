@@ -14,12 +14,9 @@ import json
 import os
 import subprocess
 import sys
-import re
-
 YT_DLP = "/opt/homebrew/bin/yt-dlp"
 DURATION_MIN = 60
 DURATION_MAX = 900
-CONFIDENCE_WARN = 0.7
 MAX_RESULTS_PER_QUERY = 5
 
 
@@ -86,28 +83,11 @@ def search_youtube(query: str, max_results: int = MAX_RESULTS_PER_QUERY, debug: 
         return []
 
 
-def compute_confidence(title: str, actor_name: str, label: str, entry_type: str) -> float:
-    """
-    Score 0.0–1.0 based on how well the video title matches actor + movie label.
-    """
-    title_lower = title.lower()
-
-    if entry_type == "Actor":
-        # Check actor name words
-        actor_words = [w.lower() for w in actor_name.split() if len(w) > 1]
-        actor_hits = sum(1 for w in actor_words if w in title_lower)
-        actor_score = actor_hits / len(actor_words) if actor_words else 0.0
-    else:
-        actor_score = 1.0  # not applicable
-
-    # Check label words
-    label_words = [w.lower() for w in re.split(r"[\s\.\-]+", label) if len(w) > 2]
-    label_hits = sum(1 for w in label_words if w in title_lower)
-    label_score = label_hits / len(label_words) if label_words else 0.0
-
-    if entry_type == "Actor":
-        return round(0.4 * actor_score + 0.6 * label_score, 3)
-    return round(label_score, 3)
+PRIORITY_KEYWORDS = {
+    "highlights", "best scenes", "all scenes", "every scene",
+    "scene compilation", "best moments", "top scenes", "greatest moments",
+    "all clips", "iconic scenes", "most memorable",
+}
 
 
 def pick_best_video(
@@ -117,7 +97,7 @@ def pick_best_video(
     Run all queries, collect candidates, apply duration filter, return best.
     Falls back to best available if nothing passes duration filter.
     """
-    candidates = []  # list of (confidence, video)
+    candidates = []
 
     for query in queries:
         videos = search_youtube(query, debug=True)
@@ -131,21 +111,12 @@ def pick_best_video(
                 url = f"https://www.youtube.com/watch?v={vid_id}" if vid_id else ""
             if not url:
                 continue
-
-            conf = compute_confidence(title, actor_name, label, entry_type)
-            in_duration = DURATION_MIN <= duration <= DURATION_MAX
-            candidates.append({
-                "confidence": conf,
-                "url": url,
-                "title": title,
-                "duration": duration,
-                "in_duration": in_duration,
-            })
+            candidates.append({"url": url, "title": title, "duration": duration})
 
     if not candidates:
-        return {"url": "", "title": "", "duration": 0, "confidence": 0.0}
+        return {"url": "", "title": "", "duration": 0}
 
-    # Deduplicate by video ID (keep first occurrence)
+    # Deduplicate by URL (keep first occurrence)
     seen_urls = set()
     deduped = []
     for c in candidates:
@@ -154,25 +125,21 @@ def pick_best_video(
             deduped.append(c)
     candidates = deduped
 
-    # Compilation title bonus: +0.2 (capped at 1.0)
-    COMPILATION_KEYWORDS = {
-        "compilation", "all scenes", "every scene", "best scenes", "highlights",
-        "top scenes", "all clips", "full performance",
-    }
-    for c in candidates:
-        title_lower = c["title"].lower()
-        if any(kw in title_lower for kw in COMPILATION_KEYWORDS):
-            c["confidence"] = min(1.0, round(c["confidence"] + 0.2, 3))
-
-    # Prefer candidates within duration range, then sort by confidence desc
-    in_range = [c for c in candidates if c["in_duration"]]
+    # Duration filter — fall back to full pool if nothing qualifies
+    in_range = [c for c in candidates if DURATION_MIN <= c["duration"] <= DURATION_MAX]
     pool = in_range if in_range else candidates
-    best = pool[0]
-    return best
+
+    # Sort: priority keywords first, then original order
+    def sort_key(c: dict) -> int:
+        title_lower = c["title"].lower()
+        return 0 if any(kw in title_lower for kw in PRIORITY_KEYWORDS) else 1
+
+    pool.sort(key=sort_key)
+    return pool[0]
 
 
 def enrich_actor(actor: dict) -> dict:
-    """Enrich a single actor JSON object with yt_url and yt_confidence fields."""
+    """Enrich a single actor JSON object with a yt_url field."""
     folder_name = actor.get("folder_name", "")
     entry_type = actor.get("type", "Actor")
     actor_name = folder_name_to_display(folder_name)
@@ -181,8 +148,8 @@ def enrich_actor(actor: dict) -> dict:
     print(f"\n{'='*60}")
     print(f"  {actor.get('title', folder_name)}")
     print(f"{'='*60}")
-    print(f"  {'Rank':<6} {'Label':<35} {'Conf':>5}  {'Dur':>5}  URL / Title")
-    print(f"  {'-'*100}")
+    print(f"  {'Rank':<6} {'Label':<35} {'Dur':>5}  URL / Title")
+    print(f"  {'-'*90}")
 
     enriched_rankings = []
     for entry in rankings:
@@ -191,13 +158,11 @@ def enrich_actor(actor: dict) -> dict:
         queries = build_queries(entry_type, actor_name, label)
         result = pick_best_video(queries, actor_name, label, entry_type)
 
-        warn = "⚠️ " if result["confidence"] < CONFIDENCE_WARN else "   "
         dur_str = f"{result['duration']}s" if result["duration"] else "N/A"
-        conf_str = f"{result['confidence']:.2f}"
-        print(f"  {str(rank):<6} {label:<35} {conf_str:>5}  {dur_str:>5}  {warn}{result['url']}")
+        print(f"  {str(rank):<6} {label:<35} {dur_str:>5}  {result['url']}")
         print(f"         Title: {result['title']}")
 
-        enriched = {**entry, "yt_url": result["url"], "yt_confidence": result["confidence"]}
+        enriched = {**entry, "yt_url": result["url"]}
         enriched_rankings.append(enriched)
 
     return {**actor, "rankings": enriched_rankings}
