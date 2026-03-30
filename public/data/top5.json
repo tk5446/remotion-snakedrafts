@@ -1,57 +1,147 @@
-{
-    "folder_name": "BRAD-PITT",
-    "title": "Top 5 Brad Pitt Movies",
-    "description": "Brad Pitt has made a LOT of great movies…\n\nBut which one is #1? 👀\n\n5️⃣ Moneyball\n4️⃣ The Big Short\n🥉 Once Upon a Time in Hollywood\n🥈 Se7en\n🥇 Fight Club\n\nAgree or nah? 🤔\n\n👇 Drop your #1 in the comments.\n\n🔗 Draft this on the app — link in bio.\n\n#movies #movieranking #bradpitt #cinema #movielovers",
-    "rankings": [
-      {
-        "rank": 5,
-        "label": "The Big Short",
-        "video": {
-          "yt_url": "https://www.youtube.com/watch?v=-4QPVo0UIzc",
-          "start_time": 5,
-          "duration": 10,
-      "clipped_video": "bp5.mp4"
-        }
-      },
-      {
-        "rank": 4,
-        "label": "Moneyball",
-        "video": {
-          "yt_url": "https://www.youtube.com/watch?v=vgqG3ITMv1Q",
-          "start_time": 1,
-          "duration": 10,
-      "clipped_video": "bp3.mp4"
-        }
-      },
-      {
-        "rank": 3,
-        "label": "Once Upon a Time... in Hollywood",
-        "video": {
-          "yt_url": "https://www.youtube.com/watch?v=ELeMaP8EPAA",
-          "start_time": 10,
-          "duration": 10,
-      "clipped_video": "bp2.mp4"
-        }
-      },
-      {
-        "rank": 2,
-        "label": "Se7en",
-        "video": {
-          "yt_url": "https://www.youtube.com/watch?v=znmZoVkCjpI",
-          "start_time": 8,
-          "duration": 10,
-      "clipped_video": "bp1.mp4"
-        }
-      },
-      {
-        "rank": 1,
-        "label": "Fight Club",
-        "video": {
-          "yt_url": "https://www.youtube.com/watch?v=SUXWAEX2jlg",
-          "start_time": 15,
-          "duration": 10,
-      "clipped_video": "bp4.mp4"
-        }
-      }
-    ]
+[
+  {
+    "actorName": "Jack Nicholson",
+    "actorSlug": "jack-nicholson",
+    "rank": 1,
+    "movieTitle": "One Flew Over the Cuckoo's Nest",
+    "movieSlug": "one-flew-over-the-cuckoos-nest",
+    "localFilename": "1.jpg",
+    "year": 1975,
+    "tmdbId": 510,
+    "tmdb_description": "A petty criminal fakes insanity to serve his sentence in a mental ward rather than prison. He soon finds himself as a leader to the other patients\u2014and an enemy to the cruel, domineering nurse who runs the ward.",
+    "yt_url": "https://www.youtube.com/watch?v=Pc0_Xnvl3t4",
+    "start_time": "0:38",
+    "duration": 8,
+    "clipped_video": "JACK_NICHOLSON_1.mp4"
+  },
+  {
+    "actorName": "Jack Nicholson",
+    "actorSlug": "jack-nicholson",
+    "rank": 2,
+    "movieTitle": "The Shining",
+    "movieSlug": "the-shining",
+    "localFilename": "2.jpg",
+    "year": 1980,
+    "tmdbId": 694,
+    "tmdb_description": "Jack Torrance accepts a caretaker job at the Overlook Hotel, where he, along with his wife Wendy and their son Danny, must live isolated from the rest of the world for the winter. But they aren't prepared for the madness that lurks within.",
+    "yt_url": "https://www.youtube.com/watch?v=rAVd_jKlAKQ",
+    "start_time": "2:46",
+    "duration": 10,
+    "clipped_video": "JACK_NICHOLSON_2.mp4"
+  },
+  {
+    "actorName": "Jack Nicholson",
+    "actorSlug": "jack-nicholson",
+    "rank": 3,
+    "movieTitle": "The Departed",
+    "movieSlug": "the-departed",
+    "localFilename": "3.jpg",
+    "year": 2006,
+    "tmdbId": 1422,
+    "tmdb_description": "To take down South Boston's Irish Mafia, the police send in one of their own to infiltrate the underworld, not realizing the syndicate has done likewise. While an undercover cop curries favor with the mob kingpin, a career criminal rises through the police ranks. But both sides soon discover there's a mole among them.",
+    "yt_url": "https://www.youtube.com/watch?v=JXq3CtfwIkQ",
+    "start_time": "0:51",
+    "duration": 10,
+    "clipped_video": "JACK_NICHOLSON_3.mp4"
+  },
+  {
+    "actorName": "Jack Nicholson",
+    "actorSlug": "jack-nicholson",
+    "rank": 4,
+    "movieTitle": "A Few Good Men",
+    "movieSlug": "a-few-good-men",
+    "localFilename": "4.jpg",
+    "year": 1992,
+    "tmdbId": 881,
+    "tmdb_description": "When cocky military lawyer Lt. Daniel Kaffee and his co-counsel, Lt. Cmdr. JoAnne Galloway, are assigned to a murder case, they uncover a hazing ritual that could implicate high-ranking officials such as shady Col. Nathan Jessep.",
+    "yt_url": "https://www.youtube.com/watch?v=2sLcfQKU_co",
+    "start_time": "5:09",
+    "duration": 8,
+    "clipped_video": "JACK_NICHOLSON_4.mp4"
+  },
+  {
+    "actorName": "Jack Nicholson",
+    "actorSlug": "jack-nicholson",
+    "rank": 5,
+    "movieTitle": "Batman",
+    "movieSlug": "batman",
+    "localFilename": "5.jpg",
+    "year": 1989,
+    "tmdbId": 268,
+    "tmdb_description": "Having witnessed his parents' brutal murder as a child, millionaire philanthropist Bruce Wayne fights crime in Gotham City disguised as Batman, a costumed hero who strikes fear into the hearts of villains. But when a deformed madman known as 'The Joker' seizes control of Gotham's criminal underworld, Batman must face his most ruthless nemesis ever while protecting both his identity and his love interest, reporter Vicki Vale.",
+    "yt_url": "https://www.youtube.com/watch?v=yPBPcACUTng",
+    "start_time": "1:17",
+    "duration": 9,
+    "clipped_video": "JACK_NICHOLSON_5.mp4"
+  },
+  {
+    "actorName": "Jack Nicholson",
+    "actorSlug": "jack-nicholson",
+    "rank": 6,
+    "movieTitle": "Chinatown",
+    "movieSlug": "chinatown",
+    "localFilename": "6.jpg",
+    "year": 1974,
+    "tmdbId": 829,
+    "tmdb_description": "Private eye Jake Gittes lives off of the murky moral climate of sunbaked, pre-World War II Southern California. Hired by a beautiful socialite to investigate her husband's extra-marital affair, Gittes is swept into a maelstrom of double dealings and deadly deceits, uncovering a web of personal and political scandals that come crashing together.",
+    "yt_url": null,
+    "start_time": null,
+    "duration": null
+  },
+  {
+    "actorName": "Jack Nicholson",
+    "actorSlug": "jack-nicholson",
+    "rank": 7,
+    "movieTitle": "Easy Rider",
+    "movieSlug": "easy-rider",
+    "localFilename": "7.jpg",
+    "year": 1969,
+    "tmdbId": 624,
+    "tmdb_description": "Wyatt and Billy, two Harley-riding hippies, complete a drug deal in Southern California and decide to travel cross-country in search of spiritual truth.",
+    "yt_url": null,
+    "start_time": null,
+    "duration": null
+  },
+  {
+    "actorName": "Jack Nicholson",
+    "actorSlug": "jack-nicholson",
+    "rank": 8,
+    "movieTitle": "As Good as It Gets",
+    "movieSlug": "as-good-as-it-gets",
+    "localFilename": "8.jpg",
+    "year": 1997,
+    "tmdbId": 2898,
+    "tmdb_description": "A misanthropic author, a single mother and waitress, and a gay artist form an unlikely friendship after the artist is assaulted in a robbery.",
+    "yt_url": null,
+    "start_time": null,
+    "duration": null
+  },
+  {
+    "actorName": "Jack Nicholson",
+    "actorSlug": "jack-nicholson",
+    "rank": 9,
+    "movieTitle": "About Schmidt",
+    "movieSlug": "about-schmidt",
+    "localFilename": "9.jpg",
+    "year": 2002,
+    "tmdbId": 2755,
+    "tmdb_description": "A recently retired man embarks on a journey to his estranged daughter's wedding, only to discover more about himself and life than he ever expected.",
+    "yt_url": null,
+    "start_time": null,
+    "duration": null
+  },
+  {
+    "actorName": "Jack Nicholson",
+    "actorSlug": "jack-nicholson",
+    "rank": 10,
+    "movieTitle": "Terms of Endearment",
+    "movieSlug": "terms-of-endearment",
+    "localFilename": "10.jpg",
+    "year": 1983,
+    "tmdbId": 11050,
+    "tmdb_description": "Aurora, a finicky woman, is in search of true love while her daughter faces marital issues. Together, they help each other deal with problems and find reasons to live a joyful life.",
+    "yt_url": null,
+    "start_time": null,
+    "duration": null
   }
+]

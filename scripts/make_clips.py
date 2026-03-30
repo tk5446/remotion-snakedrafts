@@ -3,11 +3,13 @@
 make_clips.py — SNA-137
 
 Downloads YouTube videos and cuts clips at specified timestamps.
-Input JSON must already have yt_url, start_time, and duration populated
-for each ranking entry.
+Input JSON is a flat array of movie entries with yt_url, start_time,
+and duration at the root level of each entry.
+
+Only processes entries with rank <= 5.
 
 Usage:
-    python scripts/make_clips.py <path/to/top5_with_urls.json>
+    python scripts/make_clips.py <path/to/movies.json>
 """
 
 import argparse
@@ -31,35 +33,40 @@ def parse_start_time(start_time: str) -> int:
     return minutes * 60 + seconds
 
 
-def make_clip_filename(folder_name: str, rank: int) -> str:
-    """BRAD-PITT + 5 → BRAD_PITT_5.mp4"""
-    base = folder_name.replace("-", "_")
+def make_clip_filename(actor_slug: str, rank: int) -> str:
+    """al-pacino + 5 → AL_PACINO_5.mp4"""
+    base = actor_slug.upper().replace("-", "_")
     return f"{base}_{rank}.mp4"
 
 
-def download_video(yt_url: str, tmp_path: str) -> bool:
-    """Download video from yt_url to tmp_path using yt-dlp. Returns True on success."""
+def download_video(yt_url: str, tmp_dir: str) -> str | None:
+    """Download to tmp_dir, return actual output path or None on failure."""
+    tmp_base = os.path.join(tmp_dir, "video")
     cmd = [
         YT_DLP,
         "--no-warnings",
         "--quiet",
-        "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
-        "--merge-output-format", "mp4",
-        "-o", tmp_path,
+        "-f", "bestvideo+bestaudio/best",
+        "--merge-output-format", "mkv",
+        "-o", tmp_base + ".%(ext)s",
         yt_url,
     ]
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
         if result.returncode != 0:
             print(f"    [yt-dlp error] {result.stderr.strip()}", file=sys.stderr)
-            return False
-        return True
+            return None
+        for ext in ("mkv", "mp4", "webm"):
+            candidate = f"{tmp_base}.{ext}"
+            if os.path.isfile(candidate):
+                return candidate
+        return None
     except subprocess.TimeoutExpired:
         print("    [error] yt-dlp download timed out", file=sys.stderr)
-        return False
+        return None
     except Exception as e:
         print(f"    [error] yt-dlp failed: {e}", file=sys.stderr)
-        return False
+        return None
 
 
 def cut_clip(input_path: str, output_path: str, start_seconds: int, duration: int) -> bool:
@@ -89,41 +96,51 @@ def cut_clip(input_path: str, output_path: str, start_seconds: int, duration: in
         return False
 
 
-def process_actor(actor: dict) -> dict:
-    folder_name = actor.get("folder_name", "UNKNOWN")
-    rankings = actor.get("rankings", [])
+def process_movies(movies: list) -> list:
+    # Derive actor info from first entry
+    actor_slug = movies[0].get("actorSlug", "unknown")
+    actor_name = movies[0].get("actorName", actor_slug)
+
+    # Only process top 5
+    top5 = [m for m in movies if m.get("rank", 99) <= 5]
+    skipped = [m for m in movies if m.get("rank", 99) > 5]
 
     os.makedirs(CLIPS_DIR, exist_ok=True)
 
     print(f"\n{'='*60}")
-    print(f"  {actor.get('title', folder_name)}")
+    print(f"  {actor_name}")
     print(f"{'='*60}")
-    print(f"  {'Rank':<6} {'Label':<30} {'Start':>6}  {'Output':<25} Status")
+    print(f"  {'Rank':<6} {'Title':<30} {'Start':>6}  {'Output':<25} Status")
     print(f"  {'-'*85}")
 
-    updated_rankings = []
-    for entry in rankings:
+    updated_top5 = []
+    for entry in top5:
         rank = entry.get("rank")
-        label = entry.get("label", "")
-        video = entry.get("video", {})
-        yt_url = video.get("yt_url", "")
-        start_time_str = video.get("start_time", "0:00")
-        duration = video.get("duration", 10)
+        title = entry.get("movieTitle", "")
+        yt_url = entry.get("yt_url")
+        start_time_str = entry.get("start_time")
+        duration = entry.get("duration")
 
-        clip_filename = make_clip_filename(folder_name, rank)
+        clip_filename = make_clip_filename(actor_slug, rank)
         clip_path = os.path.join(CLIPS_DIR, clip_filename)
-        status_prefix = f"  {str(rank):<6} {label:<30} {start_time_str:>6}  {clip_filename:<25}"
+        status_prefix = f"  {str(rank):<6} {title:<30} {str(start_time_str or ''):>6}  {clip_filename:<25}"
 
         # Skip if already exists
         if os.path.isfile(clip_path):
             print(f"{status_prefix} skipped (already exists)")
-            updated_video = {**video, "clipped_video": clip_filename}
-            updated_rankings.append({**entry, "video": updated_video})
+            updated_top5.append({**entry, "clipped_video": clip_filename})
             continue
 
+        # Skip if no yt_url
         if not yt_url:
-            print(f"{status_prefix} FAILED (no yt_url)")
-            updated_rankings.append(entry)
+            print(f"{status_prefix} skipped (no yt_url)")
+            updated_top5.append(entry)
+            continue
+
+        # Skip if missing start_time or duration
+        if start_time_str is None or duration is None:
+            print(f"{status_prefix} skipped (missing start_time or duration)")
+            updated_top5.append(entry)
             continue
 
         # Parse start time
@@ -131,40 +148,33 @@ def process_actor(actor: dict) -> dict:
             start_seconds = parse_start_time(start_time_str)
         except ValueError as e:
             print(f"{status_prefix} FAILED ({e})")
-            updated_rankings.append(entry)
+            updated_top5.append(entry)
             continue
 
-        # Download to temp file
-        with tempfile.NamedTemporaryFile(suffix=".mp4", prefix="make_clips_", dir="/tmp", delete=False) as tmp:
-            tmp_path = tmp.name
-
-        try:
+        # Download and clip
+        with tempfile.TemporaryDirectory(prefix="make_clips_", dir="/tmp") as tmp_dir:
             print(f"{status_prefix} downloading...", end="", flush=True)
-            if not download_video(yt_url, tmp_path):
+            tmp_path = download_video(yt_url, tmp_dir)
+            if not tmp_path:
                 print(f"\r{status_prefix} FAILED (download error)")
-                updated_rankings.append(entry)
+                updated_top5.append(entry)
                 continue
 
             print(f"\r{status_prefix} clipping...   ", end="", flush=True)
             if not cut_clip(tmp_path, clip_path, start_seconds, duration):
                 print(f"\r{status_prefix} FAILED (ffmpeg error)")
-                updated_rankings.append(entry)
+                updated_top5.append(entry)
                 continue
 
             print(f"\r{status_prefix} done")
-            updated_video = {**video, "clipped_video": clip_filename}
-            updated_rankings.append({**entry, "video": updated_video})
+            updated_top5.append({**entry, "clipped_video": clip_filename})
 
-        finally:
-            if os.path.isfile(tmp_path):
-                os.remove(tmp_path)
-
-    return {**actor, "rankings": updated_rankings}
+    return updated_top5 + skipped
 
 
 def main():
     parser = argparse.ArgumentParser(description="Cut clips from YouTube videos at specified timestamps.")
-    parser.add_argument("json_file", help="Path to Top5 JSON file with yt_url, start_time, and duration fields")
+    parser.add_argument("json_file", help="Path to movies JSON file with yt_url, start_time, and duration fields")
     args = parser.parse_args()
 
     input_path = args.json_file
@@ -175,12 +185,18 @@ def main():
     with open(input_path) as f:
         data = json.load(f)
 
-    actors = data if isinstance(data, list) else [data]
-    updated_actors = [process_actor(a) for a in actors]
+    if not isinstance(data, list):
+        print("Error: JSON must be a flat array of movie entries", file=sys.stderr)
+        sys.exit(1)
 
-    output = updated_actors if isinstance(data, list) else updated_actors[0]
+    if not data:
+        print("Error: JSON array is empty", file=sys.stderr)
+        sys.exit(1)
+
+    updated = process_movies(data)
+
     with open(input_path, "w") as f:
-        json.dump(output, f, indent=2)
+        json.dump(updated, f, indent=2)
 
     print(f"\n  Updated: {input_path}")
 

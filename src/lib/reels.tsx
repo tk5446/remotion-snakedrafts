@@ -20,24 +20,20 @@ export const REEL_H = 1920;
 // Types
 // ---------------------------------------------------------------------------
 
-export type VideoInfo = {
-  yt_url: string;
-  start_time: number;
-  duration: number;
-  clipped_video: string;
-};
-
-export type Ranking = {
+export type MovieEntry = {
+  actorName: string;
+  actorSlug: string;
   rank: number;
-  label: string;
-  video: VideoInfo;
-};
-
-export type Top5Data = {
-  folder_name: string;
-  title: string;
-  description: string;
-  rankings: Ranking[];
+  movieTitle: string;
+  movieSlug: string;
+  localFilename: string;
+  year: number;
+  tmdbId: number;
+  tmdb_description: string;
+  yt_url: string | null;
+  start_time: string | null;
+  duration: number | null;
+  clipped_video?: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -154,12 +150,12 @@ export const ReelVideo: React.FC<ReelVideoProps> = ({
 // ---------------------------------------------------------------------------
 
 export const buildCumulativeFrames = (
-  rankings: Ranking[],
+  entries: MovieEntry[],
   fps: number = FPS,
 ): number[] => {
   const boundaries: number[] = [0];
-  for (const r of rankings) {
-    boundaries.push(boundaries[boundaries.length - 1] + r.video.duration * fps);
+  for (const r of entries) {
+    boundaries.push(boundaries[boundaries.length - 1] + (r.duration ?? 0) * fps);
   }
   return boundaries;
 };
@@ -175,8 +171,8 @@ export const getActiveIndex = (
 };
 
 export const getTotalDurationFrames = (
-  rankings: Ranking[],
+  entries: MovieEntry[],
   fps: number = FPS,
 ): number => {
-  return rankings.reduce((sum, r) => sum + r.video.duration * fps, 0);
+  return entries.reduce((sum, r) => sum + (r.duration ?? 0) * fps, 0);
 };
