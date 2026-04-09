@@ -6,8 +6,10 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@remotion/captions": "^4.0.429",
     "@remotion/cli": "4.0.429",
     "@remotion/tailwind-v4": "4.0.429",
+    "anthropic": "^0.0.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.429",
@@ -26,12 +28,14 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
-
     "clips:install": "cd tools/clip-studio && npm install",
     "clips:dev": "cd tools/clip-studio && npm run dev",
     "clips:search": "cd tools/clip-studio && npm run search --",
     "clips:download": "cd tools/clip-studio && npm run download --",
-    "clips:clip": "cd tools/clip-studio && npm run clip --"
+    "clips:clip": "cd tools/clip-studio && npm run clip --",
+    "captions:transcribe": "python scripts/transcribe_clips.py",
+    "admin:install": "cd tools/admin && npm install",
+    "admin": "cd tools/admin && npm run dev"
   },
   "sideEffects": [
     "*.css"

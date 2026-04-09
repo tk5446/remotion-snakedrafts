@@ -1,6 +1,7 @@
 import { Composition } from "remotion";
 import { Top10Board } from "./Top10Board";
 import { Top5Reel } from "./Top5Reel";
+import { Top5Version2 } from "./Top5Version2";
 import { getTotalDurationFrames, FPS, type MovieEntry } from "./lib/reels";
 
 import top5Json from "../public/data/top5.json";
@@ -13,7 +14,12 @@ const CARD_FRAMES = 1.5 * FPS;
 const HOOK_FRAMES = 90;
 const top5Entries = (top5Json as MovieEntry[]).filter((e) => e.rank <= 5);
 const OUTRO_FRAMES = CARD_FRAMES;
+
+// Top5Reel: hook + per-clip intro cards + clips + outro
 const top5Duration = getTotalDurationFrames(top5Entries, FPS) + CARD_FRAMES * top5Entries.length + HOOK_FRAMES + OUTRO_FRAMES;
+
+// Top5Version2: clips only + outro (no hook, no per-clip intro cards)
+const top5V2Duration = getTotalDurationFrames(top5Entries, FPS) + OUTRO_FRAMES;
 
 export const RemotionRoot = () => {
   return (
@@ -38,6 +44,14 @@ export const RemotionRoot = () => {
         fps={FPS}
         durationInFrames={top5Duration}
       />
+      <Composition
+        id="Top5Version2"
+        component={Top5Version2}
+        width={1080}
+        height={1920}
+        fps={FPS}
+        durationInFrames={top5V2Duration}
+      />      
     </>
   );
 };

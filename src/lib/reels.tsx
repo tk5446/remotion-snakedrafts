@@ -24,6 +24,7 @@ export type MovieEntry = {
   actorName: string;
   actorSlug: string;
   rank: number;
+  video_rank: number;
   movieTitle: string;
   movieSlug: string;
   localFilename: string;
@@ -34,6 +35,7 @@ export type MovieEntry = {
   start_time: string | null;
   duration: number | null;
   clipped_video?: string;
+  brightness?: number;
 };
 
 // ---------------------------------------------------------------------------
