@@ -16,10 +16,10 @@ const top5Entries = (top5Json as MovieEntry[]).filter((e) => e.rank <= 5);
 const OUTRO_FRAMES = CARD_FRAMES;
 
 // Top5Reel: hook + per-clip intro cards + clips + outro
-const top5Duration = getTotalDurationFrames(top5Entries, FPS) + CARD_FRAMES * top5Entries.length + HOOK_FRAMES + OUTRO_FRAMES;
+const top5Duration = Math.round(getTotalDurationFrames(top5Entries, FPS) + CARD_FRAMES * top5Entries.length + HOOK_FRAMES + OUTRO_FRAMES);
 
-// Top5Version2: clips only + outro (no hook, no per-clip intro cards)
-const top5V2Duration = getTotalDurationFrames(top5Entries, FPS) + OUTRO_FRAMES;
+// Top5Version2: clips only (no hook, no per-clip intro cards, no outro)
+const top5V2Duration = Math.round(getTotalDurationFrames(top5Entries, FPS));
 
 export const RemotionRoot = () => {
   return (

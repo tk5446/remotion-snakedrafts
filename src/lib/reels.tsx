@@ -24,7 +24,8 @@ export type MovieEntry = {
   actorName: string;
   actorSlug: string;
   rank: number;
-  video_rank: number;
+  /** Supabase export field; local top5.json often omits — use `rank` for ordering */
+  video_rank?: number;
   movieTitle: string;
   movieSlug: string;
   localFilename: string;
@@ -33,9 +34,12 @@ export type MovieEntry = {
   tmdb_description: string;
   yt_url: string | null;
   start_time: string | null;
+  /** Raw trim-in offset in seconds (precise float). Use this for OffthreadVideo startFrom. */
+  trim_in?: number;
   duration: number | null;
   clipped_video?: string;
   brightness?: number;
+  volume?: number;
 };
 
 // ---------------------------------------------------------------------------
@@ -176,5 +180,5 @@ export const getTotalDurationFrames = (
   entries: MovieEntry[],
   fps: number = FPS,
 ): number => {
-  return entries.reduce((sum, r) => sum + (r.duration ?? 0) * fps, 0);
+  return Math.round(entries.reduce((sum, r) => sum + (r.duration ?? 0) * fps, 0));
 };

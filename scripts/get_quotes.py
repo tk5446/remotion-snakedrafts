@@ -33,13 +33,13 @@ from supabase_client import get_client
 
 def get_quotes_from_claude(client: anthropic.Anthropic, actor: str, movie: str, year: int) -> list[str]:
     prompt = (
-        f'For the movie "{movie}" ({year}) featuring {actor}, give me up to 10 of the most '
-        f"iconic, memorable quotes spoken by {actor}. Use trusted sources like IMDB, TMDB, "
-        f"or Rotten Tomatoes.\n\n"
-        f'When a quote includes a character name as a speaker label, wrap it in square brackets: '
-        f'"[Character] quote text"\n\n'
-        f"Return a JSON array of strings only, no other fields. Example:\n"
-        f'["[Axel Foley] I\'m a police officer!", "[Character] Another quote here"]'
+        f'For the movie "{movie}" ({year}), give me up to 10 of the most iconic, memorable '
+        f"quotes spoken by {actor}'s character. Only include quotes that are definitively "
+        f"spoken by {actor} — do not include quotes from other characters in the film. "
+        f"Use trusted sources like IMDB, TMDB, or Rotten Tomatoes.\n\n"
+        f"Return a JSON array of plain quote strings only — no character names, no labels, "
+        f"no other fields. Example:\n"
+        f'["I\'m kind of a big deal.", "You stay classy, San Diego."]'
     )
     try:
         msg = client.messages.create(

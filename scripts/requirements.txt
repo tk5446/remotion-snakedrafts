@@ -1,0 +1,7 @@
+anthropic
+beautifulsoup4
+fuzzywuzzy
+openai
+python-dotenv
+python-Levenshtein
+supabase

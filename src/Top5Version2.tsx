@@ -15,7 +15,6 @@ import {
 import {
   FPS,
   REEL_W,
-  useFont,
   safeStaticFile,
   isVideoFile,
   type MovieEntry,
@@ -43,8 +42,7 @@ const BADGE_Y = SLAM_Y + SLAM_H;     // below slam text
 const FONT_FAMILY = "Arial";
 // const FONT_URL    = staticFile("assets/fonts/Circus-Of-Innocents.ttf");
 
-const VIDEO_BASE  = "data/clips";
-const CARD_FRAMES = 1.5 * FPS; // 1.5-second outro card
+const VIDEO_BASE = "data/clips";
 
 const BACKGROUND_COLOR = "#121212";
 const TEXT_COLOR = "#fff";
@@ -142,9 +140,11 @@ const SlamText: React.FC<{ rank: number; movieTitle: string }> = ({
 
 export const Top5Version2: React.FC = () => {
   const allEntries = jsonData as MovieEntry[];
+  // Countdown order: #5 first … #1 last (same as Top5Reel; JSON has `rank`, not `video_rank`)
   const rankings = allEntries
+    .filter((e) => e.rank <= 5)
     .slice()
-    .sort((a, b) => b.video_rank - a.video_rank);
+    .sort((a, b) => b.rank - a.rank);
 
   console.log("[Top5Version2] allEntries count:", allEntries.length);
   console.log("[Top5Version2] rankings count:", rankings.length);
@@ -207,9 +207,11 @@ export const Top5Version2: React.FC = () => {
           `willRender=${!!(resolved && clipDur > 0)}`,
         );
 
-        const clipCaptions = (
-          (transcriptIndex as Record<string, Caption[]>)[r.clipped_video ?? ""] ?? []
-        );
+        // Support both old format (plain Caption[]) and new format ({ trim_in, trim_out, captions })
+        const transcriptEntry = (transcriptIndex as Record<string, unknown>)[r.clipped_video ?? ""];
+        const clipCaptions: Caption[] = Array.isArray(transcriptEntry)
+          ? transcriptEntry as Caption[]
+          : ((transcriptEntry as { captions?: Caption[] })?.captions ?? []);
 
         return (
           <React.Fragment key={r.rank}>
@@ -239,8 +241,9 @@ export const Top5Version2: React.FC = () => {
                     {videoPath && isVideoFile(videoPath) ? (
                       <OffthreadVideo
                         src={resolved}
-                        startFrom={0}
-                        endAt={clipDur}
+                        startFrom={Math.round((r.trim_in ?? 0) * FPS)}
+                        endAt={Math.round((r.trim_in ?? 0) * FPS) + Math.round(clipDur)}
+                        volume={r.volume ?? 1.0}
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         onError={(e) => {
                           console.error(`[Top5Version2] OffthreadVideo ERROR rank=${r.rank}:`, e);
@@ -286,39 +289,6 @@ export const Top5Version2: React.FC = () => {
           </React.Fragment>
         );
       })}
-
-      {/* Outro card */}
-      <Sequence from={cursor} durationInFrames={CARD_FRAMES}>
-        <AbsoluteFill
-          style={{
-            backgroundColor: BACKGROUND_COLOR,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "0 70px",
-          }}
-        >
-          <div
-            style={{
-              color: TEXT_COLOR,
-              fontFamily: FONT_FAMILY,
-              fontStyle: "italic",
-              fontWeight: 400,
-              fontSize: 130,
-              lineHeight: 1.2,
-              textAlign: "center",
-              whiteSpace: "normal",
-              wordBreak: "break-word",
-            }}
-          >
-            Comment and let us know what we missed!
-          </div>
-          <Img
-            src={staticFile("assets/snakedrafts-app-store.png")}
-            style={{ float: "left", width: 950, height: "auto", marginTop: 40 }}
-          />
-        </AbsoluteFill>
-      </Sequence>
     </AbsoluteFill>
   );
 };

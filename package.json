@@ -35,7 +35,9 @@
     "clips:clip": "cd tools/clip-studio && npm run clip --",
     "captions:transcribe": "python scripts/transcribe_clips.py",
     "admin:install": "cd tools/admin && npm install",
-    "admin": "cd tools/admin && npm run dev"
+    "admin": "cd tools/admin && npm run dev",
+    "review:install": "cd tools/clip-review && npm install",
+    "review": "cd tools/clip-review && npm run dev"
   },
   "sideEffects": [
     "*.css"
